@@ -3,12 +3,13 @@ package Demo2;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.opengl.Matrix;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import Utils.MatrixState;
 
 /**
  * Created by dxs on 2016/11/10.
@@ -21,6 +22,10 @@ public class StarSurface extends GLSurfaceView{
     private float mPreviousX;
     public StarSurface(Context context) {
         super(context);
+        this.setEGLContextClientVersion(2);
+        mRenderer=new SceneRender();
+        this.setRenderer(mRenderer);
+        this.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     }
 
     public StarSurface(Context context, AttributeSet attrs) {
@@ -51,7 +56,7 @@ public class StarSurface extends GLSurfaceView{
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
             GLES20.glClearColor(0.5f,0.5f,0.5f,1.0f);
             for(int i=0;i<ha.length;i++){
-                ha[i]=new SixPointedStar(StarSurface.this,0.2f,0.5f,-0.3f*i);
+                ha[i]=new SixPointedStar(StarSurface.this,0.2f,0.5f,-1.0f*i);
             }
             GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         }
@@ -59,8 +64,9 @@ public class StarSurface extends GLSurfaceView{
         @Override
         public void onSurfaceChanged(GL10 gl, int width, int height) {
             GLES20.glViewport(0,0,width,height);
-            float ratio=width/height;
-            MatrixState.setProjectOrthho(-ratio,ratio,-1,1,1,10);
+            float ratio=(float) width/height;
+//            MatrixState.setProjectOrtho(-ratio,ratio,-1,1,1,10);
+            MatrixState.setProjectFrustum(-ratio,ratio,-1,1,1,10);
             MatrixState.setCamera(0,0,3f,0,0,0f,0f,1.0f,0.0f);
         }
 

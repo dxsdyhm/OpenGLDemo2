@@ -33,8 +33,7 @@ public class SceneRender<T extends GLSurfaceView> implements GLSurfaceView.Rende
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
        GLES20.glViewport(0,0,width,height);
-        float ratio=width/height;
-        if(ratio==0)ratio=1;
+        float ratio=(float) width/height;
         Matrix.frustumM(Triangle.mProjMatrix,0,-ratio,ratio,-1,1,1,10);
         Matrix.setLookAtM(Triangle.mVMatrix,0,0,0,3,0f,0f,0f,0f,1.0f,0.0f);
     }

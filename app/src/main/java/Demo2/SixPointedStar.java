@@ -9,6 +9,7 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import Utils.MatrixState;
 import Utils.ShaderUtil;
 
 /**
@@ -25,8 +26,8 @@ public class SixPointedStar {
     private String mVertexShader;
     private String mFragmentShader;
     private static float[] mMMatrix=new float[16];
-    private float yAngle=0;
-    private float xAngle=0;
+    public float yAngle=0;
+    public float xAngle=0;
     private final float UNIT_SIZE=1;
     private int vCount;
     private FloatBuffer mVertexBuffer;
@@ -49,8 +50,9 @@ public class SixPointedStar {
             flist.add(z);
             flist.add(0f);flist.add(0f);flist.add(z);
             flist.add((float) (r*UNIT_SIZE*Math.cos(Math.toRadians(angle+tempAngle/2))));
-            flist.add((float) (r*UNIT_SIZE*Math.sin(Math.toRadians(angle+tempAngle))));
+            flist.add((float) (r*UNIT_SIZE*Math.sin(Math.toRadians(angle+tempAngle/2))));
             flist.add(z);
+            flist.add((float) (R*UNIT_SIZE*Math.cos(Math.toRadians(angle+tempAngle))));
             flist.add((float) (R*UNIT_SIZE*Math.sin(Math.toRadians(angle+tempAngle))));
             flist.add(z);
         }
@@ -102,6 +104,11 @@ public class SixPointedStar {
         Matrix.translateM(mMMatrix,0,0,0,1);
         Matrix.rotateM(mMMatrix,0,yAngle,0,1,0);
         Matrix.rotateM(mMMatrix,0,xAngle,1,0,0);
-        GLES20.glUniformMatrix4fv(muMVPMatrixHandle,1,false,MatrixState.get);
+        GLES20.glUniformMatrix4fv(muMVPMatrixHandle,1,false, MatrixState.getFinalMatrix(mMMatrix),0);
+        GLES20.glVertexAttribPointer(maPositionHandle,3,GLES20.GL_FLOAT,false,3*4,mVertexBuffer);
+        GLES20.glVertexAttribPointer(maColorHandler,4,GLES20.GL_FLOAT,false,4*4,mColorBuffer);
+        GLES20.glEnableVertexAttribArray(maPositionHandle);
+        GLES20.glEnableVertexAttribArray(maColorHandler);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,vCount);
     }
 }
